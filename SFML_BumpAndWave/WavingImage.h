@@ -5,18 +5,19 @@
 class WavingImage
 {
 private:
-	sf::Image destinationImage;
+	sf::Image destinationImage;	// used for draw
 	sf::Texture destTexture;
-	int Width = 800;
+	int Width = 800;		// window size
 	int Height = 600;
-	int dx[1000];
+	int dx[1000];	// sinus on the side and top
 	int dy[1000];
-	sf::Uint8 imageMask[800 * 600 * 4];
-	sf::Uint8 imageDest[800 * 600 * 4];
+	sf::Uint8 imageMask[800 * 600 * 4];	// used for calculations
+	sf::Uint8 imageDest[800 * 600 * 4];	// much faster than operating on image
 
 public:
-	void generateSinus(float, float, float);
+	void generateSinus(float, float, float);	// new wave
 	void waveToImage();
+	// read the final
 	void setDestinationTexture(sf::Texture &destinationTexture) {
 		destTexture.update(imageDest);
 		destinationTexture = destTexture;

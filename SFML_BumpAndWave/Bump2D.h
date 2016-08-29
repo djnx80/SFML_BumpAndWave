@@ -5,14 +5,14 @@
 class Bump2D
 {
 private:
-	const int Width = 800;
+	const int Width = 800;		// window size
 	const int Height = 600;
-	int maxLightSize;
-	int howManyLights;
+	int maxLightSize;	// light size (as square object)
+	int howManyLights;	// how many lights to display
 	// stwórz œwiat³a
-	struct theLight {
+	struct theLight {		// light coords 
 		int pozX, pozY, dx, dy;
-		float wspLight;
+		float wspLight;	// how light is the light :)
 	} light[600];
 
 	sf::Color lightMask[300][300];					// tutaj jest œwiat³o
@@ -22,15 +22,15 @@ private:
 	sf::Sprite destSprite;
 	sf::Image bitplaneImage;
 
-	void drawLight(int, int, float);
-	void loadImage(std::string, sf::Image &, float);
-	void loadLight(std::string, int);
-	void updateLight();
+	void drawLight(int, int, float);		// main procedure, it add light to the destination
+	void loadImage(std::string, sf::Image &, float);	// load the image to the array
+	void loadLight(std::string, int);	// load the light
+	void updateLight();	// and update the coords
 
 public:
-	Bump2D(std::string, std::string, int, int);
+	Bump2D(std::string, std::string, int, int);		// (image, light, light size, how many lights)
 	~Bump2D() {}
 	sf::Uint8* getDestinationMask() { return destinationMask; }
-	void drawAndUpdate();
+	void drawAndUpdate();		// do all the stuff
 };
 

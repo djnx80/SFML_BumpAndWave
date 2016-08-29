@@ -4,13 +4,15 @@
 
 Bump2D::Bump2D(std::string imageFileName, std::string lightFileName, int lightSize, int howManyLightsTemp)
 {
-	// wczytaj obrazek i œwiat³o
+	// load image and light
 	loadImage(imageFileName, bitplaneImage, 3);
 	loadLight(lightFileName, lightSize);
 	howManyLights = howManyLightsTemp;
 
+	// this will be used as destination
 	destTexture.create(800, 600);
 
+	// create new lights, all random except the light intensivity
 	for (int i = 0; i < howManyLights; i++) {
 		int tx = (rand() % 600) + 100;
 		int ty = (rand() % 400) + 100;
@@ -24,6 +26,7 @@ Bump2D::Bump2D(std::string imageFileName, std::string lightFileName, int lightSi
 
 
 void Bump2D::updateLight() {
+	// make sure the light stays in window
 	for (int i = 0; i < howManyLights; i++) {
 		light[i].pozX += light[i].dx;
 		light[i].pozY += light[i].dy;
@@ -32,7 +35,7 @@ void Bump2D::updateLight() {
 	}
 }
 void Bump2D::drawAndUpdate() {
-	// skopiuj bitplane
+	// copy destination to the image, so we can operate on that
 	std::copy(imageMask, imageMask + sizeof(imageMask), destinationMask);
 
 	for (int i = 0; i < howManyLights; i++)
@@ -44,18 +47,23 @@ void Bump2D::drawAndUpdate() {
 }
 void Bump2D::drawLight(int pozX, int pozY, float wspLight) {
 	sf::Color light, pixel;
-	float wsp = 1.0;
+	float wsp = 1.0;	// make it darker or lighter, 1.0 is ok
 
+	// store the colors
 	float r, g, b;
 	int tr, tg, tb;
 
+	// check all the light points and do the calcs with background
 	for (int x = 0; x < maxLightSize; x++) {
 		for (int y = 0; y < maxLightSize; y++) {
 
 			if (pozX + x > 0 && pozX + x < Width - 1 && pozY + y > 0 && pozY + y < Height - 1) {
 				light = lightMask[x][y];
+				// total will be used to check if the light is almost black or not
 				int total = light.r + light.g + light.b;
+				// we draw to array so we need to count the offset
 				int offset = ((pozX + x) + ((pozY + y)*Width)) * 4;
+				// and then get the colors from an array
 				tr = destinationMask[offset];
 				tg = destinationMask[offset + 1];
 				tb = destinationMask[offset + 2];
@@ -63,13 +71,16 @@ void Bump2D::drawLight(int pozX, int pozY, float wspLight) {
 				g = (light.g / wspLight + tg) / wsp;
 				b = (light.b / wspLight + tb) / wsp;
 
+				// can not be higher than 255
 				if (r > 255) r = 255;
 				if (g > 255) g = 255;
 				if (b > 255) b = 255;
 
+				// make new 
 				pixel.r = r;
 				pixel.g = g;
 				pixel.b = b;
+				// ignore the almost black lights so it doesn't look square in some cases
 				if (total > 20) {
 					destinationMask[offset] = r;
 					destinationMask[offset + 1] = g;
@@ -91,9 +102,10 @@ void Bump2D::loadLight(std::string fileName, int lightSize) {
 			lightMask[x][y] = lightImage.getPixel(x, y);
 }
 void Bump2D::loadImage(std::string fileName, sf::Image &bitplaneImage, float darkness) {
-	// wczytaj obrazek do tablicy
+	// load image
 	bitplaneImage.loadFromFile(fileName);
 
+	// read the image to the array and make it darker
 	sf::Color makeDarkerColor;
 	for (int x = 0; x < Width; x++) {
 		for (int y = 0; y < Height; y++) {

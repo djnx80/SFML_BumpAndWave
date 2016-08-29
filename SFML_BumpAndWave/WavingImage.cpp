@@ -43,8 +43,5 @@ void WavingImage::waveToImage() {
 			}
 		}
 	}
-
-//	destTexture.update(imageDest);
-
 }
 
